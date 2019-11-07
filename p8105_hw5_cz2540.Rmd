@@ -1,0 +1,50 @@
+---
+title: "Homework 5"
+output: github_document
+---
+
+```{r setup, include=FALSE, warning = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggplot2)
+library(grid)
+library(httr)
+library(knitr)
+```
+
+# Problem 1 
+```{r}
+
+set.seed(10)
+
+iris_with_missing = iris %>% 
+  map_df(~replace(.x, sample(1:150, 20), NA)) %>%
+  mutate(Species = as.character(Species)
+         )
+```
+
+#function to fill missing values
+```{r}
+na_function = function(x) {
+  
+  if (is.numeric(x) == T) { 
+    
+x = x %>%  replace_na(mean(x, na.rm = T))
+    
+    }
+  
+  else if (is.character(x) == T) { 
+    
+x = x %>%  replace_na("virginica")
+} 
+
+    return(x)
+}
+
+#map function over iris_with_missing
+iris_with_missing =
+  map_df(iris_with_missing, na_function)
+
+iris_with_missing
+```
+
