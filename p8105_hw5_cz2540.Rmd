@@ -87,7 +87,6 @@ sim_regression = function(n = 30, beta0 = 2, beta1 = 0) {
 
 ```{r} 
 # generating 10,000 datasets
-
 set.seed(10)
 
 list_ten_thousand =
@@ -96,4 +95,18 @@ list_ten_thousand =
 
 list_ten_thousand
 
+```
+
+```{r}
+# Beta1 for values 1-6 
+set.seed(10)
+
+beta1_one_six = 
+  tibble(new_beta1 = c(1,2,3,4,5,6)) %>% 
+  mutate(
+    output_lists = map(.x = new_beta1, ~rerun(10000, sim_regression(beta1 = .x))),
+    estimate_dfs = map(output_lists, bind_rows)) %>% 
+    select(-output_lists) %>% 
+    unnest(estimate_dfs)
+beta1_one_six
 ```
