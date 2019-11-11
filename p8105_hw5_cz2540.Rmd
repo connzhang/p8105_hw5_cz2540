@@ -108,7 +108,7 @@ beta1_regenerate =
     estimate_dfs = map(output_lists, bind_rows)) %>% 
     select(-output_lists) %>% 
     unnest(estimate_dfs)
-beta1_regenerate 
+
 ```
 
 ```{r}
