@@ -130,7 +130,44 @@ filter(beta_1_p < 0.05) %>%
     labels = c(0,1,2,3,4,5,6)) 
 
 ```
+* There seems to be a linear relation between the true value of beta and power of the test; As the true beta increases, the power of the test also increases.
 
 ```{r}
 # plot avg estimates of beta1
 
+avg_pop = 
+  beta1_regenerate%>%
+  group_by(new_beta1) %>%
+  summarize(
+    mean_beta1 = mean(beta_1_hat)
+  ) %>%
+  mutate(group = rep("total sample"))
+
+avg_samp = beta1_regenerate %>%
+  filter(beta_1_p < 0.05) %>%
+  group_by(new_beta1) %>%
+  summarize(
+    mean_beta1 = mean(beta_1_hat)
+  ) %>%
+  mutate(group = rep("null rejected sample"))
+mean_beta1 = bind_rows(avg_pop, avg_samp) 
+
+ggplot(mean_beta1, aes(x = new_beta1, y = mean_beta1, group = group, color = group)) +
+  theme_bw() + 
+  geom_point(size = 2, alpha = 0.5) +
+  geom_line(size = 1) +
+  labs(title = "beta1 average estimate by true beta", x="value of true beta1", y="average estimate of beta1") +
+  viridis::scale_color_viridis(
+    name = "sample scale", 
+    discrete = TRUE
+  ) +
+  theme(plot.title = element_text(hjust = 0.5),legend.position = "bottom") +
+  scale_x_continuous(
+    breaks = c(1,2,3,4,5,6), 
+    labels = c(1,2,3,4,5,6)) + 
+  scale_y_continuous(
+    breaks = c(1,2,3,4,5,6), 
+    labels = c(1,2,3,4,5,6))
+```
+
+ *  As true value of beta1 increases, the difference between the two tests become smaller. The sample average of `beta_1_hat` across tests for which null is rejected does not equal true value of beta_1 since there is such a difference when beta 1 is small. 
