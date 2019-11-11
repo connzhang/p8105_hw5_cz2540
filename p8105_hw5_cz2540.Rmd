@@ -101,12 +101,36 @@ list_ten_thousand
 # Beta1 for values 1-6 
 set.seed(10)
 
-beta1_one_six = 
+beta1_regenerate = 
   tibble(new_beta1 = c(1,2,3,4,5,6)) %>% 
   mutate(
     output_lists = map(.x = new_beta1, ~rerun(10000, sim_regression(beta1 = .x))),
     estimate_dfs = map(output_lists, bind_rows)) %>% 
     select(-output_lists) %>% 
     unnest(estimate_dfs)
-beta1_one_six
+beta1_regenerate 
 ```
+
+```{r}
+# plot for power of test
+
+beta1_regenerate %>%
+filter(beta_1_p < 0.05) %>%
+  group_by(new_beta1) %>%
+  summarize(
+    proport_reject = n()/10000
+  ) %>%
+  ggplot(aes(x = new_beta1, proport_reject, color = proport_reject)) +
+    theme_bw() + 
+    geom_point(size = 2, alpha = 0.5) + geom_smooth()
+    labs(title = "Proportion of times that null was rejected by true beta1 value", x="true beta1 value", y="proportion of rejection") +
+    theme(plot.title = element_text(hjust = 0.5),legend.position = "none") +
+    scale_x_continuous(
+    breaks = c(0,1,2,3,4,5,6), 
+    labels = c(0,1,2,3,4,5,6)) 
+
+```
+
+```{r}
+# plot avg estimates of beta1
+
